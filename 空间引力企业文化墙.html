@@ -2,57 +2,122 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>空间引力 · 企业文化墙Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>空间引力 · 企业文化墙智能体 Pro</title>
 
 <style>
+
+/* ===== 背景 ===== */
 body{
     margin:0;
     font-family:"Microsoft YaHei";
-    background:linear-gradient(135deg,#020617,#0f172a);
+    background: radial-gradient(circle at 20% 30%, #1e3a8a, transparent),
+                radial-gradient(circle at 80% 70%, #9333ea, transparent),
+                linear-gradient(135deg,#020617,#0f172a);
     color:#fff;
 }
+
+/* 动态流光 */
+body::before{
+    content:"";
+    position:fixed;
+    width:200%;
+    height:200%;
+    background:linear-gradient(120deg,#38bdf8,#6366f1,#a855f7,#38bdf8);
+    background-size:300% 300%;
+    animation:moveBg 12s infinite linear;
+    opacity:0.08;
+    z-index:-1;
+}
+@keyframes moveBg{
+    0%{background-position:0%}
+    100%{background-position:100%}
+}
+
+/* ===== 容器 ===== */
 .container{
     width:90%;
     max-width:1200px;
     margin:40px auto;
 }
+
+/* ===== 标题 ===== */
 h1{
     text-align:center;
+    font-size:34px;
+    margin-bottom:30px;
     background:linear-gradient(90deg,#38bdf8,#a855f7);
     -webkit-background-clip:text;
     -webkit-text-fill-color:transparent;
 }
+
+/* ===== 输入区 ===== */
+.form{
+    background:rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:12px;
+    backdrop-filter:blur(10px);
+}
+
 input,textarea{
     width:100%;
-    margin:8px 0;
+    margin:10px 0;
     padding:10px;
     border-radius:8px;
     border:none;
+    outline:none;
 }
-button{
+
+/* ===== 按钮 ===== */
+.btn{
     width:100%;
     padding:12px;
-    background:linear-gradient(90deg,#38bdf8,#a855f7);
+    margin-top:10px;
     border:none;
     border-radius:10px;
+    background:linear-gradient(90deg,#38bdf8,#a855f7);
+    font-weight:bold;
     cursor:pointer;
+    transition:0.3s;
 }
+.btn:hover{
+    transform:scale(1.03);
+    box-shadow:0 0 20px #a855f7;
+}
+
+/* ===== 卡片 ===== */
 .card{
     background:rgba(255,255,255,0.05);
     padding:20px;
     margin-top:20px;
     border-radius:12px;
     position:relative;
+    transition:0.3s;
 }
+.card:hover{
+    transform:translateY(-5px);
+}
+
+/* 复制按钮 */
 .copy{
     position:absolute;
     right:15px;
     top:15px;
-    background:#38bdf8;
+    background:linear-gradient(90deg,#38bdf8,#a855f7);
     padding:5px 10px;
     border-radius:6px;
     cursor:pointer;
+    color:#000;
 }
+
+/* 滚动条 */
+::-webkit-scrollbar{
+    width:8px;
+}
+::-webkit-scrollbar-thumb{
+    background:linear-gradient(#38bdf8,#a855f7);
+}
+
 </style>
 </head>
 
@@ -60,14 +125,17 @@ button{
 
 <div class="container">
 
-<h1>空间引力 · 文化墙生成器</h1>
+<h1>空间引力 · 企业文化墙生成器</h1>
 
+<div class="form">
 <input id="name" placeholder="企业名称">
-<input id="industry" placeholder="行业">
+<input id="industry" placeholder="行业（AI / 制造 / 金融 / 广告等）">
 <input id="theme" placeholder="文化主题">
-<textarea id="content" placeholder="文化内容"></textarea>
+<textarea id="content" placeholder="文化内容（使命 / 标语 / 价值观）"></textarea>
 
-<button onclick="generate()">生成20组方案</button>
+<button class="btn" onclick="generate()">生成20组方案</button>
+<button class="btn" onclick="clearAll()">清空方案</button>
+</div>
 
 <div id="result"></div>
 
@@ -75,14 +143,25 @@ button{
 
 <script>
 
+/* ===== 全局防重复 ===== */
+let globalUsed = new Set();
+
+/* ===== 风格匹配 ===== */
 function getStyle(industry){
     if(industry.includes("AI")||industry.includes("科技")) return "数字流光";
     if(industry.includes("制造")) return "工业齿轮";
     if(industry.includes("广告")) return "像素实验室";
     if(industry.includes("金融")) return "历史长卷";
+    if(industry.includes("环保")||industry.includes("医疗")) return "呼吸绿岛";
     return "折纸艺廊";
 }
 
+/* ===== 随机函数 ===== */
+function randomPick(arr){
+    return arr[Math.floor(Math.random()*arr.length)];
+}
+
+/* ===== 生成 ===== */
 function generate(){
 
 let name=document.getElementById("name").value;
@@ -93,21 +172,30 @@ let content=document.getElementById("content").value;
 let style=getStyle(industry);
 
 let layouts=["流线型","阵列式","中轴对称","环绕式","分层递进","放射状","模块拼接","轴线展开","几何切割","悬浮结构"];
-let materials=["亚克力+灯带","金属+蚀刻","木质+绿植","玻璃+背光","石材+金属","镜面不锈钢","穿孔板","磨砂玻璃","铝板","复合材料"];
+let materials=["亚克力+灯带","金属蚀刻","木质+绿植","玻璃背光","石材+金属","镜面不锈钢","穿孔板","磨砂玻璃","铝板","复合材料"];
 let lights=["线性灯","点光源","呼吸灯","背光灯","隐藏光","动态灯带","渐变光","轮廓灯","洗墙灯","互动光"];
 let structures=["中心装置","时间轴","模块拼接","悬浮球体","装置墙","层级叠加","符号图腾","数据流线","结构框架","艺术装置"];
+let interactions=["触控发光","磁吸替换","插卡互动","扫码互动","灯光联动","可书写区域","动态屏幕","声音触发","感应灯光","模块拼装"];
 
 let container=document.getElementById("result");
-container.innerHTML="";
 
-for(let i=0;i<20;i++){
+let count=0;
 
-let layout=layouts[i%layouts.length];
-let material=materials[(i+2)%materials.length];
-let light=lights[(i+3)%lights.length];
-let structure=structures[(i+5)%structures.length];
+while(count<20){
 
-let prompt=`
+    let layout=randomPick(layouts);
+    let material=randomPick(materials);
+    let light=randomPick(lights);
+    let structure=randomPick(structures);
+    let interaction=randomPick(interactions);
+
+    let key=layout+material+light+structure+interaction;
+
+    if(globalUsed.has(key)) continue;
+
+    globalUsed.add(key);
+
+    let prompt=`
 ${name} 企业文化墙设计，
 行业属性：${industry}，
 核心主题：${theme}，
@@ -117,6 +205,7 @@ ${name} 企业文化墙设计，
 结构：${structure}，
 材质：${material}，
 灯光系统：${light}，
+互动设计：${interaction}，
 空间层次清晰，强化品牌表达，
 室内设计表现，
 正面平视视角，
@@ -125,20 +214,35 @@ ${name} 企业文化墙设计，
 真实可施工，
 4K渲染，杰作`;
 
-let card=document.createElement("div");
-card.className="card";
+    let card=document.createElement("div");
+    card.className="card";
 
-card.innerHTML=`
-<div class="copy" onclick="copyText(\`${prompt}\`,this)">复制</div>
-<div>${i+1}. ${prompt}</div>
-`;
+    card.innerHTML=`
+    <div class="copy" onclick="copyText(\`${prompt}\`,this)">复制</div>
+    <div>${container.children.length+1}. ${prompt}</div>
+    `;
 
-container.appendChild(card);
+    container.appendChild(card);
 
+    count++;
+}
+
+/* 防止过多卡死 */
+if(container.children.length>200){
+    for(let i=0;i<50;i++){
+        container.removeChild(container.firstChild);
+    }
 }
 
 }
 
+/* ===== 清空 ===== */
+function clearAll(){
+    document.getElementById("result").innerHTML="";
+    globalUsed.clear();
+}
+
+/* ===== 复制 ===== */
 function copyText(text,btn){
 navigator.clipboard.writeText(text);
 btn.innerText="已复制";
