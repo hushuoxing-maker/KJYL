@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>空间引力 · 企业文化墙生成器</title>
+
+<style>
+
+/* ===== 全局 ===== */
+body{
+    margin:0;
+    font-family:"Microsoft YaHei",sans-serif;
+    background: radial-gradient(circle at 20% 30%, #1e3a8a, transparent),
+                radial-gradient(circle at 80% 70%, #9333ea, transparent),
+                linear-gradient(135deg,#020617,#0f172a);
+    color:#fff;
+    overflow-x:hidden;
+}
+
+/* 动态光效背景 */
+body::before{
+    content:"";
+    position:fixed;
+    width:200%;
+    height:200%;
+    background:linear-gradient(120deg,#38bdf8,#6366f1,#a855f7,#38bdf8);
+    background-size:300% 300%;
+    animation:moveBg 12s infinite linear;
+    opacity:0.08;
+    z-index:-1;
+}
+
+@keyframes moveBg{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+/* ===== 容器 ===== */
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:50px auto;
+}
+
+/* ===== 标题 ===== */
+h1{
+    text-align:center;
+    font-size:36px;
+    margin-bottom:40px;
+    background:linear-gradient(90deg,#38bdf8,#a855f7);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 20px rgba(168,85,247,0.4);
+}
+
+/* ===== 卡片 ===== */
+.card{
+    position:relative;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:16px;
+    backdrop-filter:blur(14px);
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    transition:0.3s;
+    overflow:hidden;
+}
+
+/* 卡片流光边框 */
+.card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:16px;
+    padding:1px;
+    background:linear-gradient(120deg,#38bdf8,#a855f7,#38bdf8);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+}
+
+/* hover浮动 */
+.card:hover{
+    transform:translateY(-6px) scale(1.01);
+    box-shadow:0 20px 40px rgba(0,0,0,0.5);
+}
+
+/* ===== 文本 ===== */
+.prompt{
+    font-size:14px;
+    line-height:1.7;
+    color:#e2e8f0;
+}
+
+/* ===== 按钮 ===== */
+.copy-btn{
+    position:absolute;
+    top:15px;
+    right:15px;
+    border:none;
+    padding:6px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    color:#000;
+    background:linear-gradient(90deg,#38bdf8,#a855f7);
+    transition:0.3s;
+}
+
+/* 按钮发光 */
+.copy-btn:hover{
+    box-shadow:0 0 15px #a855f7,0 0 30px #38bdf8;
+    transform:scale(1.05);
+}
+
+/* ===== 滚动条美化 ===== */
+::-webkit-scrollbar{
+    width:8px;
+}
+::-webkit-scrollbar-thumb{
+    background:linear-gradient(#38bdf8,#a855f7);
+    border-radius:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+<h1>空间引力 · 企业文化墙AI提示词</h1>
+
+<div id="list"></div>
+</div>
+
+<script>
+
+function copyText(text,btn){
+    navigator.clipboard.writeText(text);
+    btn.innerText="已复制";
+    setTimeout(()=>btn.innerText="复制",2000);
+}
+
+const prompts = [
+"企业文化墙设计，数字流光风格，蓝色发光灯带+透明亚克力，正面平视完整展示，4K渲染",
+"企业文化墙设计，工业齿轮风格，金属结构+机械元素，正面完整展示",
+"企业文化墙设计，呼吸绿岛风格，苔藓+木质结构，生态空间",
+"企业文化墙设计，像素实验室风格，拼接模块+波普配色",
+"企业文化墙设计，折纸艺廊风格，几何切面+极简白",
+"企业文化墙设计，历史长卷风格，时间轴+金属刻字",
+"企业文化墙设计，未来科技风，蓝紫渐变光效",
+"企业文化墙设计，金融商务风，大理石+金属线条",
+"企业文化墙设计，创意拼贴风，自由排版",
+"企业文化墙设计，极简科技风，黑白灰空间",
+"企业文化墙设计，互动涂鸦墙，可书写区域",
+"企业文化墙设计，新能源风格，能量流视觉",
+"企业文化墙设计，工业制造风，机械结构",
+"企业文化墙设计，咨询公司风，极简留白",
+"企业文化墙设计，互联网创业风，动态灯带",
+"企业文化墙设计，品牌展示墙，logo强化",
+"企业文化墙设计，员工风采墙，照片阵列",
+"企业文化墙设计，荣誉墙，奖牌展示",
+"企业文化墙设计，使命愿景墙，大字视觉",
+"企业文化墙设计，未来实验室风，光影交互"
+];
+
+const list = document.getElementById("list");
+
+prompts.forEach((text,i)=>{
+    const card = document.createElement("div");
+    card.className="card";
+
+    card.innerHTML = `
+    <button class="copy-btn" onclick="copyText(\`${text}\`,this)">复制</button>
+    <div class="prompt">${i+1}. ${text}</div>
+    `;
+
+    list.appendChild(card);
+});
+
+</script>
+
+</body>
+</html>
